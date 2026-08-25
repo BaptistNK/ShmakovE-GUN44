@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,21 +6,18 @@ using UnityEngine.EventSystems;
 
 public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
 {
-    [Header("Links")]
+    public event Action<GameObject> OnPointerClickEvent;
     [SerializeField]private MeshRenderer _focus;
     [SerializeField]private MeshRenderer _select;
-
-    private bool _isClicked = false;
+    public Unit Unit { get; set; }
+    public NeighbourType NeighbourMask { get; private set; }
+    public void SetNeighbours(NeighbourType mask)
+    {
+        NeighbourMask = mask;
+    }
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (_isClicked != null)
-        {
-            _isClicked = true;
-
-            // Гасим Plane наведения и включаем Plane клика
-            if (_focus != null) _focus.enabled = false;
-            _select.enabled = true;
-        }
+        OnPointerClickEvent?.Invoke(gameObject);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -38,15 +36,53 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void SetSelect(Material material)
     {
-        
+        if(_select!=null)
+        {
+            _select.enabled = true;
+            _select.material = material;
+        }
+        else
+        {
+            Debug.LogWarning($"На объекте {gameObject.name} не назначена ссылка на Select в инспекторе!",this);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ReserSelect()
     {
-        
+        if(_select!=null)
+        {
+            _select.enabled = false;
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        // Рисует линии только для ВЫДЕЛЕННОЙ в данный момент клетки
+        Gizmos.color = Color.green;
+        Vector3 currentPos = transform.position;
+
+        // Шаг сетки для отрисовки линий (подстройте под размер ваших кубиков)
+        float offset = 1.0f;
+
+        // Если флаг содержит направление, рисуем туда линию с шариком на конце
+        if (NeighbourMask.HasFlag(NeighbourType.Left))
+            DrawNeighbourLine(currentPos, currentPos + Vector3.left * offset);
+
+        if (NeighbourMask.HasFlag(NeighbourType.Right))
+            DrawNeighbourLine(currentPos, currentPos + Vector3.right * offset);
+
+        if (NeighbourMask.HasFlag(NeighbourType.Top))
+            DrawNeighbourLine(currentPos, currentPos + Vector3.forward * offset); // Если Top — это вперед по Z
+
+        if (NeighbourMask.HasFlag(NeighbourType.Bottom))
+            DrawNeighbourLine(currentPos, currentPos + Vector3.back * offset);
+    }
+
+    private void DrawNeighbourLine(Vector3 from, Vector3 to)
+    {
+        Gizmos.DrawLine(from, to);
+        Gizmos.DrawWireSphere(to, 0.15f);
     }
 }
