@@ -21,7 +21,7 @@ public class CellManager : MonoBehaviour
         }
         InitializeCells();
         InitializeUnits();
-        DebugCheckNeighbours();
+        
     }
 
     private void HandlePointerClick(GameObject clickedCell)
@@ -84,7 +84,7 @@ public class CellManager : MonoBehaviour
                 Vector2 unitPosXZ = new Vector2(unit.transform.position.x, unit.transform.position.z);
                 Vector2 cellPosXZ = new Vector2(cell.transform.position.x, cell.transform.position.z);
                 float distanceXZ = Vector2.Distance(unitPosXZ, cellPosXZ);
-                if(distanceXZ<Tolerance&& distance<closestDistance)
+                if (distanceXZ < Tolerance && distance < closestDistance) 
                 {
                     closestDistance = distance;
                     closesCell = cell;
@@ -98,15 +98,5 @@ public class CellManager : MonoBehaviour
         }
 
     }
-    private void DebugCheckNeighbours()
-    {
-        foreach (Cell cell in allCells)
-        {
-            // Получаем маску из клетки (убедитесь, что переменная или свойство доступны)
-            NeighbourType mask = cell.NeighbourMask;
-
-            // Выведет в консоль например: "Клетка Cell_3_3 имеет соседей: Left, Right, Top, Bottom"
-            Debug.Log($"Клетка {cell.gameObject.name} имеет соседей: {mask}", cell.gameObject);
-        }
-    }
+   
 }

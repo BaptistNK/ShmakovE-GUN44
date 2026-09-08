@@ -3,12 +3,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Zenject;
 
 public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
 {
     public event Action<GameObject> OnPointerClickEvent;
+    [SerializeField] private MeshRenderer _meshRenderer;
     [SerializeField]private MeshRenderer _focus;
     [SerializeField]private MeshRenderer _select;
+    private CellPaletteSettings _paletteSettings;
+    private Material _defaultMaterial;
+
+    [Inject]
+    public void Construct(CellPaletteSettings paletteSettings)
+    {
+        _paletteSettings = paletteSettings;
+    }
+    private void Awake()
+    {
+        if(_meshRenderer!=null)
+        {
+            _defaultMaterial = _meshRenderer.sharedMaterial;
+        }
+    }
     public Unit Unit { get; set; }
     public NeighbourType NeighbourMask { get; private set; }
     public void SetNeighbours(NeighbourType mask)
@@ -36,16 +53,21 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
         }
     }
 
-    public void SetSelect(Material material)
+    public void SetSelect(CellSelectType selectType)
     {
-        if(_select!=null)
+        if (_meshRenderer == null || _paletteSettings == null) return;
+
+        if(selectType==CellSelectType.None)
         {
-            _select.enabled = true;
-            _select.material = material;
+            _meshRenderer.material = _defaultMaterial;
         }
         else
         {
-            Debug.LogWarning($"На объекте {gameObject.name} не назначена ссылка на Select в инспекторе!",this);
+            Material targetMaterial = _paletteSettings.GetMaterial(selectType);
+            if(targetMaterial!= null)
+            {
+                _meshRenderer.material = targetMaterial;
+            }
         }
     }
 
@@ -59,14 +81,11 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
 
     private void OnDrawGizmosSelected()
     {
-        // Рисует линии только для ВЫДЕЛЕННОЙ в данный момент клетки
         Gizmos.color = Color.green;
         Vector3 currentPos = transform.position;
 
-        // Шаг сетки для отрисовки линий (подстройте под размер ваших кубиков)
         float offset = 1.0f;
 
-        // Если флаг содержит направление, рисуем туда линию с шариком на конце
         if (NeighbourMask.HasFlag(NeighbourType.Left))
             DrawNeighbourLine(currentPos, currentPos + Vector3.left * offset);
 
@@ -74,7 +93,7 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
             DrawNeighbourLine(currentPos, currentPos + Vector3.right * offset);
 
         if (NeighbourMask.HasFlag(NeighbourType.Top))
-            DrawNeighbourLine(currentPos, currentPos + Vector3.forward * offset); // Если Top — это вперед по Z
+            DrawNeighbourLine(currentPos, currentPos + Vector3.forward * offset); 
 
         if (NeighbourMask.HasFlag(NeighbourType.Bottom))
             DrawNeighbourLine(currentPos, currentPos + Vector3.back * offset);

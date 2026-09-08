@@ -14,3 +14,10 @@ public enum Team
     Player1,
     Player2
 }
+public enum CellSelectType
+{
+    None,
+    Selected,
+    CanMove,
+    MoveAndAttack
+}
