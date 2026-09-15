@@ -8,32 +8,29 @@ using Zenject;
 public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
 {
     public event Action<GameObject> OnPointerClickEvent;
-    [SerializeField] private MeshRenderer _meshRenderer;
-    [SerializeField]private MeshRenderer _focus;
-    [SerializeField]private MeshRenderer _select;
-    private CellPaletteSettings _paletteSettings;
-    private Material _defaultMaterial;
+    [SerializeField] private MeshRenderer _colorCell;
+    [SerializeField] private MeshRenderer _focus;
+    [SerializeField] private MeshRenderer _select;
+    private BattleController _battleController;
+    
+    public Unit Unit { get; set; }
+    public Vector2Int Coordinates { get; set; }
 
     [Inject]
-    public void Construct(CellPaletteSettings paletteSettings)
+    public void Construct(BattleController battleController)
     {
-        _paletteSettings = paletteSettings;
+        _battleController = battleController;
     }
-    private void Awake()
-    {
-        if(_meshRenderer!=null)
-        {
-            _defaultMaterial = _meshRenderer.sharedMaterial;
-        }
-    }
-    public Unit Unit { get; set; }
-    public NeighbourType NeighbourMask { get; private set; }
-    public void SetNeighbours(NeighbourType mask)
-    {
-        NeighbourMask = mask;
-    }
+    
     public void OnPointerClick(PointerEventData eventData)
     {
+        if(eventData.button == PointerEventData.InputButton.Left)
+        {
+            if (_battleController != null)
+            {
+                _battleController.HandleCellSelection(this);
+            }
+        }
         OnPointerClickEvent?.Invoke(gameObject);
     }
 
@@ -55,20 +52,7 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
 
     public void SetSelect(CellSelectType selectType)
     {
-        if (_meshRenderer == null || _paletteSettings == null) return;
-
-        if(selectType==CellSelectType.None)
-        {
-            _meshRenderer.material = _defaultMaterial;
-        }
-        else
-        {
-            Material targetMaterial = _paletteSettings.GetMaterial(selectType);
-            if(targetMaterial!= null)
-            {
-                _meshRenderer.material = targetMaterial;
-            }
-        }
+       
     }
 
     public void ReserSelect()
@@ -79,29 +63,11 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
         }
     }
 
-    private void OnDrawGizmosSelected()
+    public void InitBaseColor(Material material)
     {
-        Gizmos.color = Color.green;
-        Vector3 currentPos = transform.position;
-
-        float offset = 1.0f;
-
-        if (NeighbourMask.HasFlag(NeighbourType.Left))
-            DrawNeighbourLine(currentPos, currentPos + Vector3.left * offset);
-
-        if (NeighbourMask.HasFlag(NeighbourType.Right))
-            DrawNeighbourLine(currentPos, currentPos + Vector3.right * offset);
-
-        if (NeighbourMask.HasFlag(NeighbourType.Top))
-            DrawNeighbourLine(currentPos, currentPos + Vector3.forward * offset); 
-
-        if (NeighbourMask.HasFlag(NeighbourType.Bottom))
-            DrawNeighbourLine(currentPos, currentPos + Vector3.back * offset);
-    }
-
-    private void DrawNeighbourLine(Vector3 from, Vector3 to)
-    {
-        Gizmos.DrawLine(from, to);
-        Gizmos.DrawWireSphere(to, 0.15f);
+        if (_colorCell != null && material != null) 
+        {
+            _colorCell.sharedMaterial = material;
+        }
     }
 }

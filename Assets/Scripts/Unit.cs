@@ -6,6 +6,9 @@ using UnityEngine.EventSystems;
 
 public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
 {
+    public Team Team {  get; set; }
+    public UnitType Type { get; set; }
+    public Cell CurrentCell { get; set; }
     public event Action OnMoveEndCallback;
     [SerializeField] private float _speed = 5f;
     private Cell _currentCell;

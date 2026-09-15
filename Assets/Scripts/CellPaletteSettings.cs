@@ -12,8 +12,6 @@ public class CellPaletteSettings : ScriptableObject
     {
         return selectType switch
         {
-            CellSelectType.Selected => _selectMaterial,
-            CellSelectType.CanMove => _canMoveMaterial,
             CellSelectType.MoveAndAttack => _moveAndAttackMaterial,
             _ => null
         };
