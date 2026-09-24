@@ -8,11 +8,16 @@ using Zenject;
 public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
 {
     public event Action<GameObject> OnPointerClickEvent;
-    [SerializeField] private MeshRenderer _colorCell;
+    [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private MeshRenderer _focus;
     [SerializeField] private MeshRenderer _select;
     private BattleController _battleController;
-    
+    [Header("Highlight materials")]
+    [SerializeField] private Material selectMaterial;
+    [SerializeField] private Material moveMaterial;
+    [SerializeField] private Material attackMaterial;
+    private Material _baseMaterial;
+
     public Unit CurrentUnit { get; set; }
     public Vector2Int Coordinates { get; set; }
 
@@ -50,24 +55,44 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
         }
     }
 
-    public void SetSelect(CellSelectType selectType)
-    {
-       
-    }
-
-    public void ReserSelect()
+    /*public void ReserSelect()
     {
         if(_select!=null)
         {
             _select.enabled = false;
         }
-    }
+    }*/
 
-    public void InitBaseColor(Material material)
+    public void InitBaseMaterial(Material material)
     {
-        if (_colorCell != null && material != null) 
+        if(meshRenderer==null)
         {
-            _colorCell.sharedMaterial = material;
+            meshRenderer = GetComponent<MeshRenderer>();
+        }
+
+        if (meshRenderer != null && material != null) 
+        {
+            meshRenderer.sharedMaterial = material;
+            _baseMaterial = material;
+        }
+    }
+    public void SetHighlight(CellHighlightState state)
+    {
+        if (meshRenderer == null) return;
+        switch(state)
+        {
+            case CellHighlightState.None:
+                meshRenderer.sharedMaterial = _baseMaterial;
+                break;
+            case CellHighlightState.Selected:
+                if (selectMaterial != null) meshRenderer.sharedMaterial = selectMaterial;
+                break;
+            case CellHighlightState.CanMove:
+                if (moveMaterial != null) meshRenderer.sharedMaterial = moveMaterial;
+                break;
+            case CellHighlightState.CanAttack:
+                if (attackMaterial != null) meshRenderer.sharedMaterial = attackMaterial;
+                break;
         }
     }
 }

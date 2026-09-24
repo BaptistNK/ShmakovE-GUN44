@@ -46,11 +46,11 @@ public class Battlefield : MonoBehaviour
                     cell.Coordinates = coords;
                     if ((x + y) % 2 == 0) 
                     {
-                        cell.InitBaseColor(_darkMaterial);
+                        cell.InitBaseMaterial(_darkMaterial);
                     }
                     else
                     {
-                        cell.InitBaseColor(_lightMaterial);
+                        cell.InitBaseMaterial(_lightMaterial);
                     }
                     _grid[coords] = cell;
                 }

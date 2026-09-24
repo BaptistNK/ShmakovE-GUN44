@@ -332,6 +332,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ebafeb80fcb69a4daa41e49a17d638a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _colorCell: {fileID: 125073009541417096}
+  meshRenderer: {fileID: 0}
   _focus: {fileID: 5912091394522032650}
   _select: {fileID: 4638481387462445565}
+  selectMaterial: {fileID: 2100000, guid: 36d8a4a53fe185249a11ecd9ef7c86cc, type: 2}
+  moveMaterial: {fileID: 2100000, guid: 2d9790fbaab5105478d952d804479532, type: 2}
+  attackMaterial: {fileID: 2100000, guid: a6f7ee63f4ff5ec459296fccd12280f2, type: 2}

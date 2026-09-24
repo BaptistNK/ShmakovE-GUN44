@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1160127752719699407}
   - component: {fileID: 998078321134714567}
   - component: {fileID: 3554932912397179702}
+  - component: {fileID: 7476548343620805879}
   m_Layer: 0
   m_Name: WhiteTeam
   m_TagString: Untagged
@@ -107,3 +108,16 @@ CapsuleCollider:
   m_Height: 7.000002
   m_Direction: 1
   m_Center: {x: 0.000000042574747, y: -0.00000059604645, z: -0.000000085149495}
+--- !u!114 &7476548343620805879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2734467900982405335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89a45e263f5f30f42947a60ec99f3457, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _speed: 5
