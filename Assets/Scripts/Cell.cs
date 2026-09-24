@@ -13,7 +13,7 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     [SerializeField] private MeshRenderer _select;
     private BattleController _battleController;
     
-    public Unit Unit { get; set; }
+    public Unit CurrentUnit { get; set; }
     public Vector2Int Coordinates { get; set; }
 
     [Inject]

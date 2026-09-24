@@ -75,7 +75,7 @@ public class Battlefield : MonoBehaviour
 
         if (unit != null)
         {
-            cell.Unit = unit;
+            cell.CurrentUnit = unit;
             unit.CurrentCell = cell;
 
             unit.Team = team;
