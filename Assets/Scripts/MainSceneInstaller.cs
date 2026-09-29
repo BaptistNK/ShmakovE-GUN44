@@ -1,7 +1,7 @@
 using Zenject;
 using UnityEngine;
 
-public class MainInstaller : MonoInstaller
+public class MainSceneInstaller : MonoInstaller
 {
     [SerializeField] private SceneController _sceneController;
     public override void InstallBindings()

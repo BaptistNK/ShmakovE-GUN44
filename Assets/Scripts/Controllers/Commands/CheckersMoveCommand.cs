@@ -31,7 +31,8 @@ public class CheckersMoveCommand : IGameplayCommand
 
     public void Interact(Cell clickedCell)
     {
-        if(clickedCell.CurrentUnit != null && clickedCell.CurrentUnit.Team == _battleController.CurrentTurn)
+        Debug.Log($"[Click Test] Игрок кликнул на клетку с координатами: {clickedCell.Coordinates}. На ней стоит юнит: {(clickedCell.CurrentUnit != null ? clickedCell.CurrentUnit.Team.ToString() : "НЕТ")}. Сейчас ход: {_battleController.CurrentTurn}");
+        if (clickedCell.CurrentUnit != null && clickedCell.CurrentUnit.Team == _battleController.CurrentTurn)
         {
             SelectUnit(clickedCell);
             return;

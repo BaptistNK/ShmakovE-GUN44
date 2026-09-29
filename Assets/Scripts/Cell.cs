@@ -21,10 +21,11 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     public Unit CurrentUnit { get; set; }
     public Vector2Int Coordinates { get; set; }
 
-    [Inject]
+  
     public void Construct(BattleController battleController)
     {
         _battleController = battleController;
+        Debug.Log("спавн клетки");
     }
     
     public void OnPointerClick(PointerEventData eventData)
