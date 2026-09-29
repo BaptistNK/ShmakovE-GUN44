@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,48 +6,41 @@ using UnityEngine.EventSystems;
 
 public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
 {
-    [Header("Links")]
+    [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField]private MeshRenderer _focus;
     [SerializeField]private MeshRenderer _select;
+    public static event Action<Cell> OnClick;
+    public static event Action<Cell> OnEnter;
+    public static event Action<Cell> OnExit;
+    private Material _baseMaterial;
 
-    private bool _isClicked = false;
+    public Vector2Int Coordinates {  get; set; }
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (_isClicked != null)
-        {
-            _isClicked = true;
-
-            // Гасим Plane наведения и включаем Plane клика
-            if (_focus != null) _focus.enabled = false;
-            _select.enabled = true;
-        }
+        OnClick?.Invoke(this);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if(_focus!=null)
-        {
-            _focus.enabled = true;
-        }
+        OnEnter?.Invoke(this);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (_focus != null)
+        OnExit?.Invoke(this);
+    }
+
+    public void InitBaseMaterial(Material material)
+    {
+        if (meshRenderer == null)
         {
-            _focus.enabled = false;
+            meshRenderer = GetComponent<MeshRenderer>();
         }
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if (meshRenderer != null && material != null)
+        {
+            meshRenderer.sharedMaterial = material;
+            _baseMaterial = material;
+        }
     }
 }
