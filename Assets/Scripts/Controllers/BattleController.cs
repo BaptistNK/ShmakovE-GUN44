@@ -7,7 +7,11 @@ using UnityEngine.EventSystems;
 public class BattleController : MonoBehaviour
 {
     [SerializeField] private PlayerController _playerController;
-
+    [SerializeField] private Battlefield _battlefield;
+    [SerializeField] private Material _baseMaterial;
+    [SerializeField] private Material _focusMaterial;
+    [SerializeField] private Material _selectMaterial;
+    private IGameplayCommand currentCommand;
     public static event Action<GameObject> Obj;
 
     private void OnEnable()
@@ -16,7 +20,10 @@ public class BattleController : MonoBehaviour
         Cell.OnEnter += HandleObjectEnter;
         Cell.OnExit += HandleObjectExit;
     }
-
+    private void Start()
+    {
+        currentCommand = new SelectCheckerCommand(_battlefield);
+    }
     private void OnDisable()
     {
         Cell.OnClick -= HandleObjectClick;
@@ -30,21 +37,26 @@ public class BattleController : MonoBehaviour
             Debug.Log("[BattleController] Click blocked");
             return;
         }
-       Select(cell);
-    }
-
-    private void Select(Cell target)
-    {
-        Debug.Log("[BattleController] Click succesed");
-    }
+        if (currentCommand != null)
+        {
+            currentCommand.Interact(cell);
+        }
+    }       
 
     private void HandleObjectEnter(Cell cell)
     {
-        Debug.Log($"[BattleController] Cursor on {cell.name}");
+        if (_playerController != null && _playerController.IsInputBlocked)
+        {
+            Debug.Log("[BattleController] Click blocked");
+            return;
+        }
     }
     private void HandleObjectExit(Cell cell)
     {
-        Debug.Log($"[BattleController] Cursor leave {cell.name}");
+        if (_playerController != null && _playerController.IsInputBlocked)
+        {
+
+        }
     }
     
 }
