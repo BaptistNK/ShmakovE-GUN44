@@ -12,13 +12,16 @@ public class SelectCheckerCommand : IGameplayCommand
     }
     public void Interact(Cell targetCell)
     {
-        if (battlefield != null) return;
-
+        if (battlefield == null) return;
+       
         battlefield.ClearAllHighlights();
-        if(targetCell.IsOccupied)
+
+        
+        if (!targetCell.IsOccupied)
         {
             return;
         }
+        
         battlefield.HighlightCell(targetCell, true, Color.red);
 
         foreach (Cell neighbor in targetCell.Neighbors)
@@ -28,7 +31,6 @@ public class SelectCheckerCommand : IGameplayCommand
                 battlefield.HighlightCell(neighbor, true, Color.green);
             }
         }
-        Debug.Log($"Выбрана клетка {targetCell.Coordinates}. Подсвечено соседей: {targetCell.Neighbors.Count}");
     }
 
     

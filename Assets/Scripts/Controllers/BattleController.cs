@@ -12,7 +12,7 @@ public class BattleController : MonoBehaviour
     [SerializeField] private Material _focusMaterial;
     [SerializeField] private Material _selectMaterial;
     private IGameplayCommand currentCommand;
-    public static event Action<GameObject> Obj;
+    //public static event Action<GameObject> Obj;
 
     private void OnEnable()
     {

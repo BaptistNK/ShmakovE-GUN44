@@ -97,7 +97,7 @@ public class Battlefield : MonoBehaviour
     {
         foreach(var pair in _grid)
         {
-            pair.Value.SetHighlight(false, Color.white);
+            pair.Value.SetHighlight(false, Color.clear);
         }
     }
 
@@ -144,11 +144,8 @@ public class Battlefield : MonoBehaviour
             {
                 checkerRenderer.material.SetColor("_BaseColor", targetColor);
             }
-            else
-            {
-                Debug.LogError($"На префабе {newChecker.name} нет компонента Renderer!");
-            }
-            newChecker.Init(team,cell);
+
+            newChecker.Init(team, cell);
             cell.SetChecker(newChecker);
         }
     }

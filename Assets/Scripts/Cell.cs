@@ -6,7 +6,8 @@ using UnityEngine.EventSystems;
 
 public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
 {
-    [SerializeField] private MeshRenderer meshRenderer;    
+    private MeshRenderer meshRenderer;
+    private MaterialPropertyBlock propBlock;
     public static event Action<Cell> OnClick;
     public static event Action<Cell> OnEnter;
     public static event Action<Cell> OnExit;
@@ -16,6 +17,15 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     public Vector2Int Coordinates {  get; set; }
 
     public bool IsOccupied => CurrentChecker != null;
+    public void Awake()
+    {
+        meshRenderer = GetComponent<MeshRenderer>();
+
+        if (meshRenderer != null && meshRenderer.material != null) 
+        {
+            propBlock = new MaterialPropertyBlock();
+        }
+    }
     public void OnPointerClick(PointerEventData eventData)
     {
         OnClick?.Invoke(this);
@@ -47,16 +57,16 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     public void SetHighlight(bool active, Color _color)
     {
         if (meshRenderer == null) return;
+
         if(active)
         {
-            meshRenderer.material.color = _color;
-            meshRenderer.material.EnableKeyword("_EMISSION");
-            meshRenderer.material.SetColor("_EmissionColor", _color * 0.5f);
+            meshRenderer.GetPropertyBlock(propBlock);
+            propBlock.SetColor("_Color", _color);
+            meshRenderer.SetPropertyBlock(propBlock);
         }
         else
         {
-            meshRenderer.material.color = _color;
-            meshRenderer.material.DisableKeyword("_EMISSION");
+            meshRenderer.SetPropertyBlock(null);
         }
     }
     public void SetNeighbors(List<Cell> neighbors)

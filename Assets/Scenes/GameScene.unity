@@ -378,8 +378,8 @@ MonoBehaviour:
   _playerController: {fileID: 1187204035}
   _battlefield: {fileID: 118505687}
   _baseMaterial: {fileID: 0}
-  _focusMaterial: {fileID: 0}
-  _selectMaterial: {fileID: 0}
+  _focusMaterial: {fileID: 2100000, guid: 0e89bd2dc863a1c4dbf188b00ff470eb, type: 2}
+  _selectMaterial: {fileID: 2100000, guid: 66bd4b1c6bc56d84aa35cd1921188b5f, type: 2}
 --- !u!4 &1187204037
 Transform:
   m_ObjectHideFlags: 0
