@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -11,8 +12,9 @@ public class BattleController : MonoBehaviour
     [SerializeField] private Material _baseMaterial;
     [SerializeField] private Material _focusMaterial;
     [SerializeField] private Material _selectMaterial;
+    [SerializeField] private TextMeshProUGUI turnText;
     private IGameplayCommand currentCommand;
-    //public static event Action<GameObject> Obj;
+    public Team CurrentTurn { get; private set; } = Team.White;
 
     private void OnEnable()
     {
@@ -22,7 +24,9 @@ public class BattleController : MonoBehaviour
     }
     private void Start()
     {
-        currentCommand = new SelectCheckerCommand(_battlefield);
+        currentCommand = new SelectCheckerCommand(_battlefield, this, _playerController);
+        UpdateTurnText();
+
     }
     private void OnDisable()
     {
@@ -59,4 +63,30 @@ public class BattleController : MonoBehaviour
         }
     }
     
+    public void SwitchTurn()
+    {
+        CurrentTurn = (CurrentTurn == Team.White) ? Team.Black : Team.White;
+        Debug.Log($"Ходит {CurrentTurn}");
+        UpdateTurnText();
+        currentCommand=new SelectCheckerCommand(_battlefield, this, _playerController);
+    }
+
+    private void UpdateTurnText()
+    {
+        if (turnText == null) return;
+        
+        if(CurrentTurn==Team.White)
+        {
+            turnText.text = "Ход: <color=#FFFFFF>Белые</color>";
+        }
+        if (CurrentTurn == Team.Black)
+        {
+            turnText.text = "Ход: <color=#000000>Черные</color>";
+        }
+    }
+
+    public void SetCommand(IGameplayCommand newCommand)
+    {
+        currentCommand = newCommand;
+    }
 }
