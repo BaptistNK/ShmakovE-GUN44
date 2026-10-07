@@ -8,12 +8,14 @@ public class MoveCommand : IGameplayCommand
     private BattleController _battleController;
     private PlayerController _playerController;
     private Cell selectedCell;
-    public MoveCommand(Battlefield battlefield, BattleController battleController, PlayerController playerController, Cell selectedCell)
+    private List<Cell> allowedCells;
+    public MoveCommand(Battlefield battlefield, BattleController battleController, PlayerController playerController, Cell selectedCell, List<Cell> allowedCells)
     {
         this._battlefield = battlefield;
         this._battleController = battleController;
         this.selectedCell = selectedCell;
         this._playerController = playerController;
+        this.allowedCells = allowedCells;
     }
 
     public void Interact(Cell targetCell)
@@ -28,7 +30,31 @@ public class MoveCommand : IGameplayCommand
             return;
         }
 
-        if(selectedCell.Neighbors.Contains(targetCell)&&!targetCell.IsOccupied)
+        if(allowedCells.Contains(targetCell))
+        {
+            Checker checkerToMove = selectedCell.CurrentChecker;
+            _battlefield.ClearAllHighlights();
+
+            Checker checkerToRemove = null;
+
+            if(Mathf.Abs(targetCell.Coordinates.x - selectedCell.Coordinates.x)==2)
+            {
+                Vector2Int middleCoords = (selectedCell.Coordinates + targetCell.Coordinates) / 2;
+                Cell middleCell = _battlefield.GetCellAt(middleCoords);
+                if(middleCell != null && middleCell.IsOccupied)
+                {
+                    checkerToRemove = middleCell.CurrentChecker;
+                    middleCell.SetChecker(null);
+                }
+            }
+            _playerController.MoveChecker(checkerToMove, targetCell, _battleController, checkerToRemove);
+        }
+        else
+        {
+            _battlefield.ClearAllHighlights();
+            _battleController.SetCommand(new SelectCheckerCommand(_battlefield, _battleController, _playerController));
+        }
+        /*if (selectedCell.Neighbors.Contains(targetCell) && !targetCell.IsOccupied) 
         {
             Checker checkerToMove = selectedCell.CurrentChecker;
             _battlefield.ClearAllHighlights();
@@ -40,6 +66,6 @@ public class MoveCommand : IGameplayCommand
             _battlefield.ClearAllHighlights();
             _battleController.SetCommand(new SelectCheckerCommand(_battlefield, _battleController, _playerController));
 
-        }
+        }*/
     }
 }

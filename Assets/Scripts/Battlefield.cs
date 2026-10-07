@@ -130,6 +130,11 @@ public class Battlefield : MonoBehaviour
         Debug.Log("Checkers spawn");
     }
 
+    public Cell GetCellInDirection(Cell startCell, Vector2Int direction)
+    {
+        Vector2Int targetCoords = startCell.Coordinates + direction;
+        return GetCellAt(targetCoords);
+    }
     private void CreateCheckerOnCell(Team team, Cell cell)
     {
         Vector3 spawnPos = cell.transform.position + Vector3.up * .6f;
@@ -148,5 +153,10 @@ public class Battlefield : MonoBehaviour
             newChecker.Init(team, cell);
             cell.SetChecker(newChecker);
         }
+    }
+    public Cell GetCellAt(Vector2Int coords)
+    {
+        if(_grid.TryGetValue(coords, out Cell cell)) return cell;
+        return null;
     }
 }
