@@ -129,7 +129,49 @@ public class Battlefield : MonoBehaviour
         }
         Debug.Log("Checkers spawn");
     }
+    public void HoverCell(Cell cell, bool isHovered)
+    {
+        if (cell == null) return;
 
+        if (isHovered)
+        {
+            // 1. Считываем текущий цвет клетки через её Renderer
+            Renderer cellRenderer = cell.GetComponentInChildren<Renderer>();
+            if (cellRenderer != null)
+            {
+                Color currentColor = cellRenderer.material.color;
+
+                // 2. Если клетка УЖЕ выбрана (красная) или доступна для хода (зеленая/желтая),
+                // мы НЕ перекрашиваем её в бирюзовый, чтобы не ломать подсказки для игрока
+                if (currentColor == Color.red || currentColor == Color.green || currentColor == Color.yellow)
+                {
+                    return;
+                }
+            }
+
+            // 3. Красим клетку в красивый бирюзовый цвет (RGB: 0, 240, 255)
+            Color turquoise = new Color(0f, 0.94f, 1f);
+            HighlightCell(cell, true, turquoise);
+        }
+        else
+        {
+            // 4. Когда мышь уходит с клетки, возвращаем ей исходный шахматный цвет
+            Renderer cellRenderer = cell.GetComponentInChildren<Renderer>();
+            if (cellRenderer != null)
+            {
+                Color currentColor = cellRenderer.material.color;
+
+                // Возвращаем базовый цвет только если за время наведения клетка не стала красной/зеленой/желтой
+                if (currentColor != Color.red && currentColor != Color.green && currentColor != Color.yellow)
+                {
+                    Vector2Int coords = cell.Coordinates;
+                    // ВАЖНО: используйте здесь точно такую же формулу черных/белых клеток, как в вашем GenerateGrid!
+                    bool isDark = (coords.x + coords.y) % 2 == 0;
+                    HighlightCell(cell, true, isDark ? Color.grey : Color.white);
+                }
+            }
+        }
+    }
     public Cell GetCellInDirection(Cell startCell, Vector2Int direction)
     {
         Vector2Int targetCoords = startCell.Coordinates + direction;
