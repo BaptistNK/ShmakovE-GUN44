@@ -36,36 +36,34 @@ public class MoveCommand : IGameplayCommand
             _battlefield.ClearAllHighlights();
 
             Checker checkerToRemove = null;
+            bool didCapture = false;
 
-            if(Mathf.Abs(targetCell.Coordinates.x - selectedCell.Coordinates.x)==2)
+            Vector2Int stepDir = new Vector2Int(
+                System.Math.Sign(targetCell.Coordinates.x - selectedCell.Coordinates.x),
+                System.Math.Sign(targetCell.Coordinates.y - selectedCell.Coordinates.y)
+            );
+            Cell checkCell = _battlefield.GetCellInDirection(selectedCell, stepDir);
+            
+            while (checkCell != null && checkCell != targetCell)
             {
-                Vector2Int middleCoords = (selectedCell.Coordinates + targetCell.Coordinates) / 2;
-                Cell middleCell = _battlefield.GetCellAt(middleCoords);
-                if(middleCell != null && middleCell.IsOccupied)
+                if (checkCell.IsOccupied)
                 {
-                    checkerToRemove = middleCell.CurrentChecker;
-                    middleCell.SetChecker(null);
-                }
-            }
-            _playerController.MoveChecker(checkerToMove, targetCell, _battleController, checkerToRemove);
-        }
-        else
-        {
-            _battlefield.ClearAllHighlights();
-            _battleController.SetCommand(new SelectCheckerCommand(_battlefield, _battleController, _playerController));
-        }
-        /*if (selectedCell.Neighbors.Contains(targetCell) && !targetCell.IsOccupied) 
-        {
-            Checker checkerToMove = selectedCell.CurrentChecker;
-            _battlefield.ClearAllHighlights();
-            _playerController.MoveChecker(checkerToMove, targetCell, _battleController, _battlefield);
-        }
-        else
-        {
-            Debug.Log("Ход сброшен");
-            _battlefield.ClearAllHighlights();
-            _battleController.SetCommand(new SelectCheckerCommand(_battlefield, _battleController, _playerController));
+                    checkerToRemove = checkCell.CurrentChecker;
 
-        }*/
+                    checkCell.SetChecker(null);
+
+                    didCapture = true;
+                }
+
+                checkCell = _battlefield.GetCellInDirection(checkCell, stepDir);
+            }
+            
+            _playerController.MoveChecker(checkerToMove, targetCell, _battleController, _battlefield, checkerToRemove, didCapture);
+        }
+        else
+        {
+            _battlefield.ClearAllHighlights();
+            _battleController.SetCommand(new SelectCheckerCommand(_battlefield, _battleController, _playerController));
+        }        
     }
 }

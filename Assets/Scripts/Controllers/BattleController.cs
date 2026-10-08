@@ -68,7 +68,7 @@ public class BattleController : MonoBehaviour
         CurrentTurn = (CurrentTurn == Team.White) ? Team.Black : Team.White;
         Debug.Log($"Ходит {CurrentTurn}");
         UpdateTurnText();
-        currentCommand=new SelectCheckerCommand(_battlefield, this, _playerController);
+        currentCommand = new SelectCheckerCommand(_battlefield, this, _playerController);
     }
 
     private void UpdateTurnText()
@@ -88,5 +88,13 @@ public class BattleController : MonoBehaviour
     public void SetCommand(IGameplayCommand newCommand)
     {
         currentCommand = newCommand;
+    }
+    private void HandleCellClick(Cell clickedCell)
+    {
+        if (_playerController.IsInputBlocked) return;
+        if(currentCommand!=null)
+        {
+            currentCommand.Interact(clickedCell);
+        }
     }
 }
