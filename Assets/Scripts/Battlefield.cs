@@ -18,20 +18,14 @@ public class Battlefield : MonoBehaviour
 
     private Dictionary<Vector2Int, Cell> _grid = new Dictionary<Vector2Int, Cell>();
 
-    // Start is called before the first frame update
+    
     void Start()
     {
         GenerateGrid();
         BuildGraph();
         SpawnCheckers();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
         
-    }
-
     //Create board
     private void GenerateGrid()
     {
@@ -90,14 +84,40 @@ public class Battlefield : MonoBehaviour
     public void HighlightCell(Cell cell, bool active, Color color)
     {
         if (cell == null) return;
-        cell.SetHighlight(active, color);
+
+        Renderer cellRenderer = cell.GetComponentInChildren<Renderer>();
+        if (cellRenderer != null)
+        {
+            cellRenderer.material.color = color;
+            if (cellRenderer.material.HasProperty("_BaseColor"))
+                cellRenderer.material.SetColor("_BaseColor", color);
+        }
+
+        if (!active) cell.HighlightType = "Default";
+        else if (color == Color.red) cell.HighlightType = "Selected";    // Выбрана шашка
+        else if (color == Color.green) cell.HighlightType = "Allowed";   // Доступный ход
+        else if (color == Color.yellow) cell.HighlightType = "Pending";  // Ожидает нажатия SPACE
     }
-    //Reset all highlight
+
     public void ClearAllHighlights()
     {
-        foreach(var pair in _grid)
+        foreach (var pair in _grid)
         {
-            pair.Value.SetHighlight(false, Color.clear);
+            Cell cell = pair.Value;
+
+            cell.HighlightType = "Default";
+
+            Vector2Int coords = pair.Key;
+            bool isDark = (coords.x + coords.y) % 2 == 0;
+
+            Renderer cellRenderer = cell.GetComponentInChildren<Renderer>();
+            if (cellRenderer != null)
+            {
+                Color baseColor = isDark ? Color.grey : Color.white;
+                cellRenderer.material.color = baseColor;
+                if (cellRenderer.material.HasProperty("_BaseColor"))
+                    cellRenderer.material.SetColor("_BaseColor", baseColor);
+            }
         }
     }
 
@@ -133,45 +153,36 @@ public class Battlefield : MonoBehaviour
     {
         if (cell == null) return;
 
+        if (cell.HighlightType == "Selected" || cell.HighlightType == "Allowed" || cell.HighlightType == "Pending")
+        {
+            return;
+        }
+
+        Renderer cellRenderer = cell.GetComponentInChildren<Renderer>();
+        if (cellRenderer == null) return;
+
         if (isHovered)
         {
-            // 1. Считываем текущий цвет клетки через её Renderer
-            Renderer cellRenderer = cell.GetComponentInChildren<Renderer>();
-            if (cellRenderer != null)
-            {
-                Color currentColor = cellRenderer.material.color;
+            Color turquoise = new Color(0f, 0.94f, 1f); 
 
-                // 2. Если клетка УЖЕ выбрана (красная) или доступна для хода (зеленая/желтая),
-                // мы НЕ перекрашиваем её в бирюзовый, чтобы не ломать подсказки для игрока
-                if (currentColor == Color.red || currentColor == Color.green || currentColor == Color.yellow)
-                {
-                    return;
-                }
-            }
-
-            // 3. Красим клетку в красивый бирюзовый цвет (RGB: 0, 240, 255)
-            Color turquoise = new Color(0f, 0.94f, 1f);
-            HighlightCell(cell, true, turquoise);
+            cellRenderer.material.color = turquoise;
+            if (cellRenderer.material.HasProperty("_BaseColor"))
+                cellRenderer.material.SetColor("_BaseColor", turquoise);
         }
         else
         {
-            // 4. Когда мышь уходит с клетки, возвращаем ей исходный шахматный цвет
-            Renderer cellRenderer = cell.GetComponentInChildren<Renderer>();
-            if (cellRenderer != null)
-            {
-                Color currentColor = cellRenderer.material.color;
+            Vector2Int coords = cell.Coordinates;
 
-                // Возвращаем базовый цвет только если за время наведения клетка не стала красной/зеленой/желтой
-                if (currentColor != Color.red && currentColor != Color.green && currentColor != Color.yellow)
-                {
-                    Vector2Int coords = cell.Coordinates;
-                    // ВАЖНО: используйте здесь точно такую же формулу черных/белых клеток, как в вашем GenerateGrid!
-                    bool isDark = (coords.x + coords.y) % 2 == 0;
-                    HighlightCell(cell, true, isDark ? Color.grey : Color.white);
-                }
-            }
+            bool isDark = (coords.x + coords.y) % 2 == 0;
+            Color baseColor = isDark ? Color.grey : Color.white;
+
+            cellRenderer.material.color = baseColor;
+            if (cellRenderer.material.HasProperty("_BaseColor"))
+                cellRenderer.material.SetColor("_BaseColor", baseColor);
         }
     }
+
+
     public Cell GetCellInDirection(Cell startCell, Vector2Int direction)
     {
         Vector2Int targetCoords = startCell.Coordinates + direction;

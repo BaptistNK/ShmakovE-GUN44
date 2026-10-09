@@ -1,14 +1,14 @@
 {
-    "name": "InputActionAsset",
+    "name": "InputManager",
     "maps": [
         {
             "name": "Gameplay",
-            "id": "815a3d4f-e015-481d-9593-5802c64d7c35",
+            "id": "ea45cae2-22c8-42f4-b145-4e3f7f91562f",
             "actions": [
                 {
                     "name": "Select",
                     "type": "Button",
-                    "id": "3545c8ca-47c2-4a93-839c-ee78679340ae",
+                    "id": "4b0e77d3-7a07-42a3-8004-cee2bed154e6",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -17,7 +17,7 @@
                 {
                     "name": "Confirm",
                     "type": "Button",
-                    "id": "6d68d5e9-4f10-45d8-a502-0c89e8a642c2",
+                    "id": "44ebeaea-a10b-4747-b5e8-15d652767a63",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -26,7 +26,7 @@
                 {
                     "name": "Cancel",
                     "type": "Button",
-                    "id": "071422a7-b27b-46c0-9d11-6502144cada5",
+                    "id": "1ed3baf9-c599-4142-b99a-d627ef578ef3",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -35,7 +35,7 @@
                 {
                     "name": "Point",
                     "type": "Value",
-                    "id": "3ef42e5f-75bb-4578-a986-ba57f1352be9",
+                    "id": "881697f0-5ff2-48fb-ac40-467b51334815",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
@@ -45,7 +45,7 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "e4e73f8d-a5fc-4a91-8469-7b6f72842831",
+                    "id": "f4eb0013-e006-46ad-b572-09b0db554841",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
@@ -56,7 +56,7 @@
                 },
                 {
                     "name": "",
-                    "id": "4dac672a-ab8b-43ba-9658-fe1adb7836d9",
+                    "id": "0147c381-53dd-462a-a7ce-69a548f199ef",
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
@@ -67,12 +67,23 @@
                 },
                 {
                     "name": "",
-                    "id": "4afec03e-78b6-4b9a-978a-b4271beea606",
+                    "id": "b63b6214-92fe-46aa-9c89-522d23bf753b",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4a42abe1-3bf6-42b7-96e2-399ee45a2624",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Point",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

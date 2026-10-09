@@ -27,7 +27,6 @@ public class BattleController : MonoBehaviour
     {
         inputActions = new InputManager();
     }
-
     private void OnEnable()
     {
         if (inputActions == null) inputActions = new InputManager();
@@ -36,17 +35,17 @@ public class BattleController : MonoBehaviour
         inputActions.Gameplay.Select.performed += OnSelectPerformed;
         inputActions.Gameplay.Cancel.performed += OnCancelPerformed;
         inputActions.Gameplay.Confirm.performed += OnConfirmPerformed;
-        /*Cell.OnClick += HandleObjectClick;
-        Cell.OnEnter += HandleObjectEnter;
-        Cell.OnExit += HandleObjectExit;*/
     }
     private void Start()
     {
-        //currentCommand = new SelectCheckerCommand(_battlefield, this, _playerController);
         if (mainCamera == null) mainCamera = Camera.main;
         ResetToSelectMode();
         UpdateTurnText();
 
+    }
+    private void Update()
+    {
+        HandleHoverLogic();
     }
     private void OnDisable()
     {
@@ -55,38 +54,8 @@ public class BattleController : MonoBehaviour
         inputActions.Gameplay.Cancel.performed -= OnCancelPerformed;
         inputActions.Gameplay.Confirm.performed -= OnConfirmPerformed;
         inputActions.Gameplay.Disable();
-        /*Cell.OnClick -= HandleObjectClick;
-        Cell.OnEnter -= HandleObjectEnter;
-        Cell.OnExit -= HandleObjectExit;*/
     }
-    private void HandleObjectClick(Cell cell)
-    {
-        if (_playerController != null && _playerController.IsInputBlocked) 
-        {
-            Debug.Log("[BattleController] Click blocked");
-            return;
-        }
-        if (currentCommand != null)
-        {
-            currentCommand.Interact(cell);
-        }
-    }       
-
-    private void HandleObjectEnter(Cell cell)
-    {
-        if (_playerController != null && _playerController.IsInputBlocked)
-        {
-            Debug.Log("[BattleController] Click blocked");
-            return;
-        }
-    }
-    private void HandleObjectExit(Cell cell)
-    {
-        if (_playerController != null && _playerController.IsInputBlocked)
-        {
-
-        }
-    }
+  
     private void OnSelectPerformed(InputAction.CallbackContext context)
     {
         if (_playerController != null && _playerController.IsInputBlocked) 
@@ -150,23 +119,14 @@ public class BattleController : MonoBehaviour
     {
         currentCommand = newCommand;
     }
-    private void HandleCellClick(Cell clickedCell)
-    {
-        if (_playerController.IsInputBlocked) return;
-        if(currentCommand!=null)
-        {
-            currentCommand.Interact(clickedCell);
-        }
-    }
+    
     private void HandleHoverLogic()
     {
         if (_playerController != null && _playerController.IsInputBlocked) return;
 
-        // Считываем Vector2 позицию курсора на экране (из Action Point)
         Vector2 mousePosition = inputActions.Gameplay.Point.ReadValue<Vector2>();
         Cell currentCell = GetCellUnderCursor(mousePosition);
 
-        // Если мы перевели мышку на другую клетку доски
         if (currentCell != lastHoveredCell)
         {
             if (lastHoveredCell != null)
@@ -188,8 +148,17 @@ public class BattleController : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
+            Debug.Log($"[Raycast] Луч попал в объект: {hit.collider.gameObject.name} на слое {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
             Cell cell = hit.collider.GetComponent<Cell>();
             if (cell == null) cell = hit.collider.GetComponentInParent<Cell>();
+            if (cell == null)
+            {
+                Checker checker = hit.collider.GetComponent<Checker>();
+                if (checker == null) checker = hit.collider.GetComponentInParent<Checker>();
+
+                // Если попали в шашку, берем клетку, на которой она физически стоит в данных игры!
+                if (checker != null) cell = checker.CurrentCell;
+            }
             return cell;
         }
         return null;

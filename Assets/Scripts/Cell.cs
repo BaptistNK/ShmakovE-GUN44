@@ -17,6 +17,7 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     public Vector2Int Coordinates {  get; set; }
 
     public bool IsOccupied => CurrentChecker != null;
+    public string HighlightType { get; set; } = "Default";
     public void Awake()
     {
         meshRenderer = GetComponent<MeshRenderer>();
