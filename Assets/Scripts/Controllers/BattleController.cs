@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Zenject;
 
 public class BattleController : MonoBehaviour
 {
@@ -16,6 +17,16 @@ public class BattleController : MonoBehaviour
     private IGameplayCommand currentCommand;
     public Team CurrentTurn { get; private set; } = Team.White;
 
+    private PlaceholderFactory<SelectCheckerCommand> _commandFactory;
+
+    [Inject]
+    public void Construct(PlayerController playerController, Battlefield battlefield, PlaceholderFactory<SelectCheckerCommand> commandFactory)
+    {
+        this._playerController = playerController;
+        this._battlefield = battlefield;
+        this._commandFactory = commandFactory;
+    }
+
     private void OnEnable()
     {
         Cell.OnClick += HandleObjectClick;
@@ -23,10 +34,9 @@ public class BattleController : MonoBehaviour
         Cell.OnExit += HandleObjectExit;
     }
     private void Start()
-    {
-        currentCommand = new SelectCheckerCommand(_battlefield, this, _playerController);
+    {        
+        ResetToSelectMode();
         UpdateTurnText();
-
     }
     private void OnDisable()
     {
@@ -96,5 +106,10 @@ public class BattleController : MonoBehaviour
         {
             currentCommand.Interact(clickedCell);
         }
+    }
+    public void ResetToSelectMode()
+    {
+        _battlefield.ClearAllHighlights();
+        currentCommand = _commandFactory.Create();
     }
 }

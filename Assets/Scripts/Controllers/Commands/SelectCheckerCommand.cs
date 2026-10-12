@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using Zenject;
 
 public class SelectCheckerCommand : IGameplayCommand
 {
@@ -9,6 +10,7 @@ public class SelectCheckerCommand : IGameplayCommand
     private BattleController battleController;
     private PlayerController playerController;
     private List<Cell> validTargetCells = new List<Cell>();
+    [Inject]
     public SelectCheckerCommand(Battlefield _battlefield, BattleController _battleController, PlayerController _playerController)
     {
         this.battlefield = _battlefield;
