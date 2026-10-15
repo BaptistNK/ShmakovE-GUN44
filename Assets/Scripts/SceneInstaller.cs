@@ -12,7 +12,7 @@ public class SceneInstaller : MonoInstaller
         Container.Bind<Battlefield>().FromInstance(battlefield).AsSingle();
         Container.Bind<PlayerController>().FromInstance(playerController).AsSingle();
         Container.Bind<BattleController>().FromInstance(battleController).AsSingle();
-
+        Container.Bind<CameraController>().FromComponentInHierarchy().AsSingle();
         Container.BindFactory<SelectCheckerCommand, PlaceholderFactory<SelectCheckerCommand>>();
     }
 }

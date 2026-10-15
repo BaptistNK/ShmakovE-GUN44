@@ -14,17 +14,19 @@ public class BattleController : MonoBehaviour
     [SerializeField] private Material _focusMaterial;
     [SerializeField] private Material _selectMaterial;
     [SerializeField] private TextMeshProUGUI turnText;
+    [SerializeField] private CameraController _cameraController;
     private IGameplayCommand currentCommand;
     public Team CurrentTurn { get; private set; } = Team.White;
 
     private PlaceholderFactory<SelectCheckerCommand> _commandFactory;
 
     [Inject]
-    public void Construct(PlayerController playerController, Battlefield battlefield, PlaceholderFactory<SelectCheckerCommand> commandFactory)
+    public void Construct(PlayerController playerController, Battlefield battlefield, PlaceholderFactory<SelectCheckerCommand> commandFactory, CameraController cameraController)
     {
         this._playerController = playerController;
         this._battlefield = battlefield;
         this._commandFactory = commandFactory;
+        this._cameraController = cameraController;
     }
 
     private void OnEnable()
@@ -78,7 +80,21 @@ public class BattleController : MonoBehaviour
         CurrentTurn = (CurrentTurn == Team.White) ? Team.Black : Team.White;
         Debug.Log($"Ходит {CurrentTurn}");
         UpdateTurnText();
-        currentCommand = new SelectCheckerCommand(_battlefield, this, _playerController);
+        _playerController.SetBlock(true);
+        if(_cameraController != null)
+        {
+        _cameraController.RotateToTeam(CurrentTurn, () => 
+        {
+            ResetToSelectMode();
+            _playerController.SetBlock(false);
+        //currentCommand = new SelectCheckerCommand(_battlefield, this, _playerController);
+        });
+        }
+        else
+        {
+            ResetToSelectMode();
+            _playerController.SetBlock(false);
+        }
     }
 
     private void UpdateTurnText()
