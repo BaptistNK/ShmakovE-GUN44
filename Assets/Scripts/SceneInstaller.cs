@@ -9,10 +9,14 @@ public class SceneInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
+
         Container.Bind<Battlefield>().FromInstance(battlefield).AsSingle();
         Container.Bind<PlayerController>().FromInstance(playerController).AsSingle();
         Container.Bind<BattleController>().FromInstance(battleController).AsSingle();
 
+        Container.Bind<InputManager>().AsSingle().NonLazy();
+
         Container.BindFactory<SelectCheckerCommand, PlaceholderFactory<SelectCheckerCommand>>();
+        Container.Bind<MoveCommand>().AsTransient();
     }
 }

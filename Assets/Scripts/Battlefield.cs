@@ -154,6 +154,35 @@ public class Battlefield : MonoBehaviour
             cell.SetChecker(newChecker);
         }
     }
+    public List<Cell> GetAllCellsWithValidJumps(Team currentTeam)
+    {
+        List<Cell> cellsWithJumps = new List<Cell>();
+
+        Debug.Log($"[Аналитика Battlefield] Запуск сканирования поля для команды {currentTeam}...");
+
+        foreach (var pair in _grid)
+        {
+            Cell cell = pair.Value;
+
+            // ИСПРАВЛЕНО под регистр вашего класса: checkerTeam с маленькой буквы
+            if (cell.IsOccupied && cell.CurrentChecker != null && cell.CurrentChecker.checkerTeam == currentTeam)
+            {
+                // Напрямую вызываем поиск прыжков
+                List<Cell> targetJumps = SelectCheckerCommand.GetValidJumps(cell, this, currentTeam);
+
+                if (targetJumps.Count > 0)
+                {
+                    Debug.Log($"[Аналитика Battlefield] Найдена обязательная рубка для фишки на {cell.Coordinates}! Доступно прыжков: {targetJumps.Count}");
+                    cellsWithJumps.Add(cell);
+                }
+            }
+        }
+
+        Debug.Log($"[Аналитика Battlefield] Сканирование завершено. Всего фишек, обязанных рубить: {cellsWithJumps.Count}");
+        return cellsWithJumps;
+    }
+
+
     public Cell GetCellAt(Vector2Int coords)
     {
         if(_grid.TryGetValue(coords, out Cell cell)) return cell;

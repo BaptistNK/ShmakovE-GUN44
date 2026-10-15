@@ -1,20 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class MoveCommand : IGameplayCommand
 {
     private Battlefield _battlefield;
     private BattleController _battleController;
     private PlayerController _playerController;
+    private PlaceholderFactory<SelectCheckerCommand> _selectCommandFactory;
     private Cell selectedCell;
     private List<Cell> allowedCells;
-    public MoveCommand(Battlefield battlefield, BattleController battleController, PlayerController playerController, Cell selectedCell, List<Cell> allowedCells)
+
+    [Inject]
+    public MoveCommand(
+        Battlefield battlefield,
+        BattleController battleController,
+        PlayerController playerController,
+        PlaceholderFactory<SelectCheckerCommand> selectCommandFactory,
+        Cell selectedCell,
+        List<Cell> allowedCells)
     {
         this._battlefield = battlefield;
         this._battleController = battleController;
-        this.selectedCell = selectedCell;
         this._playerController = playerController;
+        this._selectCommandFactory = selectCommandFactory;
+        this.selectedCell = selectedCell;
         this.allowedCells = allowedCells;
     }
 
@@ -24,7 +35,7 @@ public class MoveCommand : IGameplayCommand
         if (targetCell.IsOccupied && targetCell.CurrentChecker.checkerTeam == _battleController.CurrentTurn) 
         {
             //Выбираем новую шашку
-            var selectCmd = new SelectCheckerCommand(_battlefield, _battleController, _playerController);
+            var selectCmd = _selectCommandFactory.Create();
             _battleController.SetCommand(selectCmd);
             selectCmd.Interact(targetCell);
             return;
@@ -63,7 +74,7 @@ public class MoveCommand : IGameplayCommand
         else
         {
             _battlefield.ClearAllHighlights();
-            _battleController.SetCommand(new SelectCheckerCommand(_battlefield, _battleController, _playerController));
+            _battleController.SetCommand(_selectCommandFactory.Create());
         }        
     }
 }

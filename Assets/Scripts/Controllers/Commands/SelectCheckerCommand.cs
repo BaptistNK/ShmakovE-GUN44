@@ -6,27 +6,45 @@ using Zenject;
 
 public class SelectCheckerCommand : IGameplayCommand
 {
+    //private Battlefield battlefield;
+    //private BattleController battleController;
+    //private PlayerController playerController;
+    private List<Cell> validTargetCells = new List<Cell>();
+    private List<Cell> forcedInputCells;
+    //private DiContainer container;
+
     private Battlefield battlefield;
     private BattleController battleController;
     private PlayerController playerController;
-    private List<Cell> validTargetCells = new List<Cell>();
+    private DiContainer container;
     [Inject]
-    public SelectCheckerCommand(Battlefield _battlefield, BattleController _battleController, PlayerController _playerController)
+    public SelectCheckerCommand(Battlefield battlefield, BattleController battleController, PlayerController playerController, DiContainer container)
     {
-        this.battlefield = _battlefield;
-        this.battleController = _battleController;
-        this.playerController = _playerController;
+        this.battlefield = battlefield;
+        this.battleController = battleController;
+        this.playerController = playerController;
+        this.container = container;
     }
     public void Interact(Cell targetCell)
     {
-        if (battlefield == null) return;
-       
+        if (battlefield == null || battleController == null) return;
+        //Debug.Log($"[SelectCheckerCommand] Кликнули по ячейке {targetCell.Coordinates}. Обязательных фишек в памяти команды: {forcedInputCells.Count}");
         battlefield.ClearAllHighlights();
         validTargetCells.Clear();
       
-        if (!targetCell.IsOccupied || targetCell.CurrentChecker.checkerTeam != battleController.CurrentTurn) 
+        if (!targetCell.IsOccupied || targetCell.CurrentChecker == null || targetCell.CurrentChecker.checkerTeam != battleController.CurrentTurn) 
         {
+            Debug.Log("[SelectCheckerCommand] Клик проигнорирован: ячейка пуста или это чужая команда.");
             return;
+        }
+
+        if (battleController.forcedCells != null && battleController.forcedCells.Count > 0) 
+        {
+            if (!battleController.forcedCells.Contains(targetCell))
+            {
+                Debug.LogWarning($"[Правила] Клик ЗАБЛОКИРОВАН! Вы нажали на {targetCell.Coordinates}, но должны рубить одной из {battleController.forcedCells.Count} фишек.");
+                return;
+            }
         }
 
         Checker selectedChecker = targetCell.CurrentChecker;
@@ -99,7 +117,8 @@ public class SelectCheckerCommand : IGameplayCommand
         }
         if (validTargetCells.Count > 0)
         {
-            battleController.SetCommand(new MoveCommand(battlefield, battleController, playerController, targetCell, validTargetCells));
+            var moveCmd = container.Instantiate<MoveCommand>(new object[] { targetCell, validTargetCells });
+            battleController.SetCommand(moveCmd);
         }
     }
     public static List<Cell> GetValidJumps(Cell fromCell, Battlefield field, Team currentTeam)
@@ -141,7 +160,6 @@ public class SelectCheckerCommand : IGameplayCommand
                     else
                     {
                         // Клетка пустая. Проверяем, нашли ли мы врага ранее на этой линии
-                        // ИСПРАВЛЕНО: Добавлена жесткая проверка, что firstFoundChecker ФИЗИЧЕСКИ существует в памяти
                         if (firstFoundChecker != null)
                         {
                             if (firstFoundChecker.checkerTeam != currentTeam)
@@ -174,5 +192,5 @@ public class SelectCheckerCommand : IGameplayCommand
             }
         }
         return jumps;
-    }    
+    }
 }

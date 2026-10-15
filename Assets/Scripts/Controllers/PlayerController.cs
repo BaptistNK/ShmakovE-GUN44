@@ -1,12 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class PlayerController : MonoBehaviour
 {
     public bool IsInputBlocked {  get; private set; }
     [SerializeField] private float moveSpeed = 2f; //скорость движения шашки
-
+    private DiContainer _container;
+    [Inject]
+    public void Construct(DiContainer container)
+    {
+        this._container = container;
+    }
     public void MoveChecker(Checker checker, Cell targetCell, BattleController battleController, Battlefield battlefield, Checker checkerToRemove, bool didCapture)
     {
         StartCoroutine(MoveRoutine(checker, targetCell, battleController, battlefield, checkerToRemove, didCapture));
@@ -62,7 +68,8 @@ public class PlayerController : MonoBehaviour
                 {
                     battlefield.HighlightCell(jumpCell, true, Color.green);
                 }
-                battleController.SetCommand(new MoveCommand(battlefield, battleController, this, targerCell, nextJumps));
+                var moveCmd = _container.Instantiate<MoveCommand>(new object[] {targerCell,nextJumps});
+                battleController.SetCommand(moveCmd);
                 IsInputBlocked = false;
                 yield break;
             }

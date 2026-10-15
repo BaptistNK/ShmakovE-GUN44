@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 public class BattleController : MonoBehaviour
@@ -14,27 +15,32 @@ public class BattleController : MonoBehaviour
     [SerializeField] private Material _focusMaterial;
     [SerializeField] private Material _selectMaterial;
     [SerializeField] private TextMeshProUGUI turnText;
+    private InputManager inputAction;
+    public List<Cell> forcedCells { get; private set; } = new List<Cell>();
     private IGameplayCommand currentCommand;
     public Team CurrentTurn { get; private set; } = Team.White;
-
+    public DiContainer Container { get; private set; }
     private PlaceholderFactory<SelectCheckerCommand> _commandFactory;
 
     [Inject]
-    public void Construct(PlayerController playerController, Battlefield battlefield, PlaceholderFactory<SelectCheckerCommand> commandFactory)
+    public void Construct(DiContainer container, PlayerController playerController, Battlefield battlefield, PlaceholderFactory<SelectCheckerCommand> commandFactory, InputManager inputManager)
     {
         this._playerController = playerController;
         this._battlefield = battlefield;
         this._commandFactory = commandFactory;
+        this.Container = container;
+        this.inputAction = inputManager;
     }
 
     private void OnEnable()
     {
         Cell.OnClick += HandleObjectClick;
         Cell.OnEnter += HandleObjectEnter;
-        Cell.OnExit += HandleObjectExit;
+        //Cell.OnExit += HandleObjectExit;
     }
     private void Start()
-    {        
+    {   
+        AnalizeForcedMoves();
         ResetToSelectMode();
         UpdateTurnText();
     }
@@ -42,7 +48,7 @@ public class BattleController : MonoBehaviour
     {
         Cell.OnClick -= HandleObjectClick;
         Cell.OnEnter -= HandleObjectEnter;
-        Cell.OnExit -= HandleObjectExit;
+        //Cell.OnExit -= HandleObjectExit;
     }
     private void HandleObjectClick(Cell cell)
     {
@@ -65,20 +71,38 @@ public class BattleController : MonoBehaviour
             return;
         }
     }
-    private void HandleObjectExit(Cell cell)
+    
+    private void AnalizeForcedMoves()
     {
-        if (_playerController != null && _playerController.IsInputBlocked)
-        {
+        if (forcedCells == null) forcedCells = new List<Cell>();
 
+        forcedCells.Clear();
+
+        if (_battlefield == null) return;
+
+        // Получаем данные из Battlefield
+        var result = _battlefield.GetAllCellsWithValidJumps(CurrentTurn);
+
+        // ИСПРАВЛЕНО: Жесткая проверка. Если Battlefield почему-то вернул null, 
+        // мы оставляем наш forcedCells просто пустым списком, а не ломаем игру
+        if (result != null)
+        {
+            forcedCells.AddRange(result);
+        }
+
+        if (forcedCells.Count > 0)
+        {
+            Debug.Log($"[BattleController] Обнаружена обязательная рубка! Фишек для атаки: {forcedCells.Count}");
         }
     }
-    
+
     public void SwitchTurn()
     {
         CurrentTurn = (CurrentTurn == Team.White) ? Team.Black : Team.White;
         Debug.Log($"Ходит {CurrentTurn}");
         UpdateTurnText();
-        currentCommand = new SelectCheckerCommand(_battlefield, this, _playerController);
+        AnalizeForcedMoves();
+        ResetToSelectMode();
     }
 
     private void UpdateTurnText()
@@ -109,7 +133,18 @@ public class BattleController : MonoBehaviour
     }
     public void ResetToSelectMode()
     {
-        _battlefield.ClearAllHighlights();
-        currentCommand = _commandFactory.Create();
+        if (_battlefield != null)
+        {
+            _battlefield.ClearAllHighlights();
+        }
+
+        if (_commandFactory != null)
+        {
+            currentCommand = _commandFactory.Create();
+        }
+        else
+        {
+            Debug.LogError("[BattleController] Ошибка: Фабрика _commandFactory не заинжектилась!");
+        }
     }
 }
