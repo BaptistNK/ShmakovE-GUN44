@@ -15,21 +15,33 @@ public class BattleController : MonoBehaviour
     [SerializeField] private Material _focusMaterial;
     [SerializeField] private Material _selectMaterial;
     [SerializeField] private TextMeshProUGUI turnText;
+<<<<<<< HEAD
     private InputManager inputAction;
     public List<Cell> forcedCells { get; private set; } = new List<Cell>();
+=======
+    [SerializeField] private CameraController _cameraController;
+>>>>>>> 9ad8cf956a5709aa7b3251a11928408e187ff2be
     private IGameplayCommand currentCommand;
     public Team CurrentTurn { get; private set; } = Team.White;
     public DiContainer Container { get; private set; }
     private PlaceholderFactory<SelectCheckerCommand> _commandFactory;
 
     [Inject]
+<<<<<<< HEAD
     public void Construct(DiContainer container, PlayerController playerController, Battlefield battlefield, PlaceholderFactory<SelectCheckerCommand> commandFactory, InputManager inputManager)
+=======
+    public void Construct(PlayerController playerController, Battlefield battlefield, PlaceholderFactory<SelectCheckerCommand> commandFactory, CameraController cameraController)
+>>>>>>> 9ad8cf956a5709aa7b3251a11928408e187ff2be
     {
         this._playerController = playerController;
         this._battlefield = battlefield;
         this._commandFactory = commandFactory;
+<<<<<<< HEAD
         this.Container = container;
         this.inputAction = inputManager;
+=======
+        this._cameraController = cameraController;
+>>>>>>> 9ad8cf956a5709aa7b3251a11928408e187ff2be
     }
 
     private void OnEnable()
@@ -101,8 +113,26 @@ public class BattleController : MonoBehaviour
         CurrentTurn = (CurrentTurn == Team.White) ? Team.Black : Team.White;
         Debug.Log($"Ходит {CurrentTurn}");
         UpdateTurnText();
+<<<<<<< HEAD
         AnalizeForcedMoves();
         ResetToSelectMode();
+=======
+        _playerController.SetBlock(true);
+        if(_cameraController != null)
+        {
+        _cameraController.RotateToTeam(CurrentTurn, () => 
+        {
+            ResetToSelectMode();
+            _playerController.SetBlock(false);
+        //currentCommand = new SelectCheckerCommand(_battlefield, this, _playerController);
+        });
+        }
+        else
+        {
+            ResetToSelectMode();
+            _playerController.SetBlock(false);
+        }
+>>>>>>> 9ad8cf956a5709aa7b3251a11928408e187ff2be
     }
 
     private void UpdateTurnText()
