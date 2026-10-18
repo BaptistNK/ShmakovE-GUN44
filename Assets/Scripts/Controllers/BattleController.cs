@@ -1,10 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using Zenject;
 
 public class BattleController : MonoBehaviour
@@ -15,33 +11,27 @@ public class BattleController : MonoBehaviour
     [SerializeField] private Material _focusMaterial;
     [SerializeField] private Material _selectMaterial;
     [SerializeField] private TextMeshProUGUI turnText;
-<<<<<<< HEAD
-    private InputManager inputAction;
+
     public List<Cell> forcedCells { get; private set; } = new List<Cell>();
-=======
+
     [SerializeField] private CameraController _cameraController;
->>>>>>> 9ad8cf956a5709aa7b3251a11928408e187ff2be
+
     private IGameplayCommand currentCommand;
     public Team CurrentTurn { get; private set; } = Team.White;
     public DiContainer Container { get; private set; }
     private PlaceholderFactory<SelectCheckerCommand> _commandFactory;
 
     [Inject]
-<<<<<<< HEAD
-    public void Construct(DiContainer container, PlayerController playerController, Battlefield battlefield, PlaceholderFactory<SelectCheckerCommand> commandFactory, InputManager inputManager)
-=======
+
     public void Construct(PlayerController playerController, Battlefield battlefield, PlaceholderFactory<SelectCheckerCommand> commandFactory, CameraController cameraController)
->>>>>>> 9ad8cf956a5709aa7b3251a11928408e187ff2be
+
     {
         this._playerController = playerController;
         this._battlefield = battlefield;
         this._commandFactory = commandFactory;
-<<<<<<< HEAD
-        this.Container = container;
-        this.inputAction = inputManager;
-=======
+
         this._cameraController = cameraController;
->>>>>>> 9ad8cf956a5709aa7b3251a11928408e187ff2be
+
     }
 
     private void OnEnable()
@@ -113,10 +103,10 @@ public class BattleController : MonoBehaviour
         CurrentTurn = (CurrentTurn == Team.White) ? Team.Black : Team.White;
         Debug.Log($"Ходит {CurrentTurn}");
         UpdateTurnText();
-<<<<<<< HEAD
+
         AnalizeForcedMoves();
         ResetToSelectMode();
-=======
+
         _playerController.SetBlock(true);
         if(_cameraController != null)
         {
@@ -124,7 +114,6 @@ public class BattleController : MonoBehaviour
         {
             ResetToSelectMode();
             _playerController.SetBlock(false);
-        //currentCommand = new SelectCheckerCommand(_battlefield, this, _playerController);
         });
         }
         else
@@ -132,7 +121,6 @@ public class BattleController : MonoBehaviour
             ResetToSelectMode();
             _playerController.SetBlock(false);
         }
->>>>>>> 9ad8cf956a5709aa7b3251a11928408e187ff2be
     }
 
     private void UpdateTurnText()
@@ -153,14 +141,7 @@ public class BattleController : MonoBehaviour
     {
         currentCommand = newCommand;
     }
-    private void HandleCellClick(Cell clickedCell)
-    {
-        if (_playerController.IsInputBlocked) return;
-        if(currentCommand!=null)
-        {
-            currentCommand.Interact(clickedCell);
-        }
-    }
+
     public void ResetToSelectMode()
     {
         if (_battlefield != null)

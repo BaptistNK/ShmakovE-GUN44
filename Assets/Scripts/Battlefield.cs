@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,7 +17,6 @@ public class Battlefield : MonoBehaviour
 
     private Dictionary<Vector2Int, Cell> _grid = new Dictionary<Vector2Int, Cell>();
 
-    // Start is called before the first frame update
     void Start()
     {
         GenerateGrid();
