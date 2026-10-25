@@ -68,7 +68,7 @@ public class PlayerController : MonoBehaviour
                 {
                     battlefield.HighlightCell(jumpCell, true, Color.green);
                 }
-                var moveCmd = _container.Instantiate<MoveCommand>(new object[] {targerCell,nextJumps});
+                var moveCmd = _container.Instantiate<MoveCommand>(new object[] {targerCell,nextJumps, true});
                 battleController.SetCommand(moveCmd);
                 IsInputBlocked = false;
                 yield break;

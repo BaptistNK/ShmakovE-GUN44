@@ -10,6 +10,7 @@ public class MoveCommand : IGameplayCommand
     private PlaceholderFactory<SelectCheckerCommand> _selectCommandFactory;
     private Cell selectedCell;
     private List<Cell> allowedCells;
+    private bool isCombo;
 
     [Inject]
     public MoveCommand(
@@ -18,7 +19,8 @@ public class MoveCommand : IGameplayCommand
         PlayerController playerController,
         PlaceholderFactory<SelectCheckerCommand> selectCommandFactory,
         Cell selectedCell,
-        List<Cell> allowedCells)
+        List<Cell> allowedCells,
+        [InjectOptional] bool isCombo = false)
     {
         this._battlefield = battlefield;
         this._battleController = battleController;
@@ -26,6 +28,7 @@ public class MoveCommand : IGameplayCommand
         this._selectCommandFactory = selectCommandFactory;
         this.selectedCell = selectedCell;
         this.allowedCells = allowedCells;
+        this.isCombo= isCombo;
     }
 
     public void Interact(Cell targetCell)
@@ -33,6 +36,11 @@ public class MoveCommand : IGameplayCommand
         //Сброс выбранной шашки при выборе другой
         if (targetCell.IsOccupied && targetCell.CurrentChecker.checkerTeam == _battleController.CurrentTurn) 
         {
+            if(isCombo)
+            {
+                Debug.LogWarning("Завершите серию сруба");
+                return;
+            }
             //Выбираем новую шашку
             var selectCmd = _selectCommandFactory.Create();
             _battleController.SetCommand(selectCmd);
@@ -72,6 +80,11 @@ public class MoveCommand : IGameplayCommand
         }
         else
         {
+            if(isCombo)
+            {
+                Debug.Log("Выберите правильную шашку");
+                return;
+            }
             _battlefield.ClearAllHighlights();
             _battleController.SetCommand(_selectCommandFactory.Create());
         }        
