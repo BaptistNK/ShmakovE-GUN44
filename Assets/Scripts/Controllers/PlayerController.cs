@@ -6,7 +6,7 @@ using Zenject;
 public class PlayerController : MonoBehaviour
 {
     public bool IsInputBlocked {  get; private set; }
-    [SerializeField] private float moveSpeed = 2f; //скорость движения шашки
+    [SerializeField] private float moveSpeed = 2f; 
     private DiContainer _container;
     [Inject]
     public void Construct(DiContainer container)
@@ -24,14 +24,13 @@ public class PlayerController : MonoBehaviour
     }
     private IEnumerator MoveRoutine(Checker checker, Cell targerCell, BattleController battleController, Battlefield battlefield, Checker checkerToRemove, bool didCapture)
     {
-        IsInputBlocked = true; //Запрещаем инпут
-        //Отвязываем шашку от клетки
+        IsInputBlocked = true; 
         Cell oldCell = checker.CurrentCell;
         if (oldCell != null) oldCell.SetChecker(null);
-        //привязываепм шашку на новую клетку
+        
         checker.MoveToCell(targerCell);
         targerCell.SetChecker(checker);
-        //Делаем шашку дочкой клетки
+        
         checker.transform.SetParent(targerCell.transform);
 
         Vector3 targetPosition = targerCell.transform.position + Vector3.up * .6f;
@@ -41,14 +40,14 @@ public class PlayerController : MonoBehaviour
             checker.transform.position = Vector3.MoveTowards(checker.transform.position, targetPosition, moveSpeed * Time.deltaTime);
             yield return null;
         }
-        //фиксируем точную позицию в конце движения
+        
         checker.transform.position = targetPosition;
 
         if (checkerToRemove != null) 
         {
             Destroy(checkerToRemove.gameObject);
         }
-        //превращение в дамку
+        
         if(!checker.IsKing)
         {
             if ((checker.checkerTeam == Team.White && targerCell.Coordinates.y == 7) || (checker.checkerTeam == Team.Black && targerCell.Coordinates.y == 0)) 
@@ -57,7 +56,7 @@ public class PlayerController : MonoBehaviour
                 checker.PromoteToKing();
             }
         }
-        //комбо
+        
         if(didCapture)
         {
             List<Cell> nextJumps = SelectCheckerCommand.GetValidJumps(targerCell, battlefield, checker.checkerTeam);
@@ -74,8 +73,8 @@ public class PlayerController : MonoBehaviour
                 yield break;
             }
         }
-        //завершение хода
+
         IsInputBlocked = false;
-        battleController.SwitchTurn();//Смена хода
+        battleController.SwitchTurn();
     }    
 }

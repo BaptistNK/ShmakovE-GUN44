@@ -4,12 +4,8 @@ using Zenject;
 
 public class SelectCheckerCommand : IGameplayCommand
 {
-    //private Battlefield battlefield;
-    //private BattleController battleController;
-    //private PlayerController playerController;
     private List<Cell> validTargetCells = new List<Cell>();
     private List<Cell> forcedInputCells;
-    //private DiContainer container;
 
     private Battlefield battlefield;
     private BattleController battleController;
@@ -26,7 +22,7 @@ public class SelectCheckerCommand : IGameplayCommand
     public void Interact(Cell targetCell)
     {
         if (battlefield == null || battleController == null) return;
-        //Debug.Log($"[SelectCheckerCommand] Кликнули по ячейке {targetCell.Coordinates}. Обязательных фишек в памяти команды: {forcedInputCells.Count}");
+        
         battlefield.ClearAllHighlights();
         validTargetCells.Clear();
       
@@ -135,7 +131,6 @@ public class SelectCheckerCommand : IGameplayCommand
         };
         foreach (Vector2Int dir in allDirections)
         {
-            //условия для дамки
             if (checker.IsKing)
             {
                 Cell nextCell = field.GetCellInDirection(fromCell, dir);
@@ -145,28 +140,25 @@ public class SelectCheckerCommand : IGameplayCommand
                 {
                     if (nextCell.IsOccupied)
                     {
-                        if (firstFoundChecker != null) break; // Две фигуры подряд перепрыгнуть нельзя
-
-                        // Защита: проверяем, что шашка физически существует на клетке
+                        if (firstFoundChecker != null) break; 
                         if (nextCell.CurrentChecker == null)
                         {
-                            break; // Сбой данных, прерываем этот луч
+                            break; 
                         }
 
                         firstFoundChecker = nextCell.CurrentChecker;
                     }
                     else
                     {
-                        // Клетка пустая. Проверяем, нашли ли мы врага ранее на этой линии
                         if (firstFoundChecker != null)
                         {
                             if (firstFoundChecker.checkerTeam != currentTeam)
                             {
-                                jumps.Add(nextCell); // Дамка может прыгнуть на любую из пустых клеток ЗА врагом
+                                jumps.Add(nextCell); 
                             }
                             else
                             {
-                                break; // Свою фигуру рубить нельзя, прерываем луч
+                                break; 
                             }
                         }
                     }

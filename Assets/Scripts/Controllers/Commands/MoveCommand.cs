@@ -33,7 +33,6 @@ public class MoveCommand : IGameplayCommand
 
     public void Interact(Cell targetCell)
     {
-        //Сброс выбранной шашки при выборе другой
         if (targetCell.IsOccupied && targetCell.CurrentChecker.checkerTeam == _battleController.CurrentTurn) 
         {
             if(isCombo)
@@ -41,7 +40,6 @@ public class MoveCommand : IGameplayCommand
                 Debug.LogWarning("Завершите серию сруба");
                 return;
             }
-            //Выбираем новую шашку
             var selectCmd = _selectCommandFactory.Create();
             _battleController.SetCommand(selectCmd);
             selectCmd.Interact(targetCell);

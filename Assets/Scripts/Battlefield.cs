@@ -58,7 +58,7 @@ public class Battlefield : MonoBehaviour
         }
         Debug.Log($"[Battlefield] Поле сгенерировано. клеток в словаре: {_grid.Count}");
     }
-    //Create neighbors cell
+    
     private void BuildGraph()
     {
         foreach(var pair in _grid)
@@ -90,7 +90,7 @@ public class Battlefield : MonoBehaviour
         if (cell == null) return;
         cell.SetHighlight(active, color);
     }
-    //Reset all highlight
+    
     public void ClearAllHighlights()
     {
         foreach(var pair in _grid)
@@ -162,10 +162,8 @@ public class Battlefield : MonoBehaviour
         {
             Cell cell = pair.Value;
 
-            // ИСПРАВЛЕНО под регистр вашего класса: checkerTeam с маленькой буквы
             if (cell.IsOccupied && cell.CurrentChecker != null && cell.CurrentChecker.checkerTeam == currentTeam)
             {
-                // Напрямую вызываем поиск прыжков
                 List<Cell> targetJumps = SelectCheckerCommand.GetValidJumps(cell, this, currentTeam);
 
                 if (targetJumps.Count > 0)
