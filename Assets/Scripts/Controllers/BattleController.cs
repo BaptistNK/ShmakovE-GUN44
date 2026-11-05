@@ -22,18 +22,12 @@ public class BattleController : MonoBehaviour
 
     [SerializeField] private CameraController _cameraController;
 
-    [Header("UI Restart Settings")]
-    [SerializeField] private GameObject _restartPanel;
-    [SerializeField] private Image _progressBar;
-    [SerializeField] private float _holdDuration = 2.0f;
-
     private IGameplayCommand currentCommand;
     public Team CurrentTurn { get; private set; } = Team.White;
     public DiContainer Container { get; private set; }
     private PlaceholderFactory<SelectCheckerCommand> _commandFactory;
     private InputManager _inputManager;
-    private float _currentHoldTime = 0f;
-    private bool _isTabPressed = false;
+   
 
     private Cell _lastHoveredCell;
     private Color _hoverColor = new Color(0.4f, 0.85f, 0.8f, 0.35f);
@@ -59,7 +53,6 @@ public class BattleController : MonoBehaviour
             _inputManager.Gameplay.Enable();
             _inputManager.Gameplay.Select.performed += OnSelectClicked;
             _inputManager.Gameplay.Cancel.performed += OnCancelPressed;
-            _inputManager.Gameplay.Confirm.performed += OnConfirmPressed;
         }
     }
     private void Start()
@@ -71,7 +64,6 @@ public class BattleController : MonoBehaviour
 
     private void Update()
     {
-        HandleTabRestart();
         HandleCellHover();
     }
 
@@ -81,7 +73,6 @@ public class BattleController : MonoBehaviour
         {
             _inputManager.Gameplay.Select.performed -= OnSelectClicked;
             _inputManager.Gameplay.Cancel.performed -= OnCancelPressed;
-            _inputManager.Gameplay.Confirm.performed -= OnConfirmPressed;
             _inputManager.Gameplay.Disable();
         }
     }
@@ -175,59 +166,7 @@ public class BattleController : MonoBehaviour
         Debug.Log("[BattleController] Нажата ESC: Сброс и отмена действия.");
         ResetToSelectMode();
     }
-    private void HandleTabRestart()
-    {
-        if (Keyboard.current == null) return;
-
-        _isTabPressed = Keyboard.current.tabKey.isPressed;
-
-        if (_isTabPressed)
-        {
-            if (_restartPanel != null && !_restartPanel.activeSelf)
-            {
-                _restartPanel.SetActive(true);
-            }
-
-            _currentHoldTime += Time.deltaTime;
-
-            if (_progressBar != null)
-            {
-                _progressBar.fillAmount = Mathf.Clamp01(_currentHoldTime / _holdDuration);
-            }
-
-            if (_currentHoldTime >= _holdDuration)
-            {
-                int activeSceneIndex = SceneManager.GetActiveScene().buildIndex;
-                SceneManager.LoadScene(activeSceneIndex);
-            }
-        }
-        else
-        {
-            if (_currentHoldTime > 0f)
-            {
-                _currentHoldTime -= Time.deltaTime * 5f;
-                if (_currentHoldTime < 0f) _currentHoldTime = 0f;
-
-                if (_progressBar != null)
-                {
-                    _progressBar.fillAmount = Mathf.Clamp01(_currentHoldTime / _holdDuration);
-                }
-
-                if (_currentHoldTime == 0f && _restartPanel != null)
-                {
-                    _restartPanel.SetActive(false);
-                }
-            }
-        }
-    }
-    private void OnConfirmPressed(InputAction.CallbackContext context)
-    {
-        if (_playerController != null && _playerController.IsInputBlocked) return;
-
-        Debug.Log("[BattleController] Нажат Пробел: Подтверждение действия.");
-    }
-
-    
+        
     private void AnalizeForcedMoves()
     {
         if (forcedCells == null) forcedCells = new List<Cell>();
