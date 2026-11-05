@@ -89,10 +89,7 @@ public class BattleController : MonoBehaviour
     {
         if (_lastHoveredCell != null)
         {
-            if (_battlefield != null)
-            {
-                _battlefield.HighlightCell(_lastHoveredCell, false, Color.clear);
-            }
+            _lastHoveredCell.SetHoverHighlight(false, Color.clear);
             _lastHoveredCell = null;
         }
     }
@@ -123,16 +120,13 @@ public class BattleController : MonoBehaviour
 
             if (cell != _lastHoveredCell)
             {
-                ResetLastHovered(); 
+                ResetLastHovered();
 
                 if (cell != null)
                 {
                     _lastHoveredCell = cell;
 
-                    if (_battlefield != null)
-                    {
-                        _battlefield.HighlightCell(_lastHoveredCell, true, _hoverColor);
-                    }
+                    _lastHoveredCell.SetHoverHighlight(true, _hoverColor);
                 }
             }
         }

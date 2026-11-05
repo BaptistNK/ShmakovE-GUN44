@@ -14,6 +14,8 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     public List<Cell> Neighbors { get; private set; } = new List<Cell>();
     public Checker CurrentChecker { get; private set; }
     public Vector2Int Coordinates {  get; set; }
+    private Color _currentHighlightColor = Color.clear;
+    private bool _isHighlighted = false;
 
     public bool IsOccupied => CurrentChecker != null;
     public void Awake()
@@ -55,19 +57,50 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     }
     public void SetHighlight(bool active, Color _color)
     {
-        if (meshRenderer == null) return;
+        if (meshRenderer == null || propBlock == null) return;
 
-        if(active)
+        _isHighlighted = active;
+
+        if (active)
         {
-            meshRenderer.GetPropertyBlock(propBlock);
-            propBlock.SetColor("_Color", _color);
-            meshRenderer.SetPropertyBlock(propBlock);
+            _currentHighlightColor = _color; 
+            ApplyColor(_color);
         }
         else
         {
+            _currentHighlightColor = Color.clear;
             meshRenderer.SetPropertyBlock(null);
         }
     }
+
+    public void SetHoverHighlight(bool active, Color hoverColor)
+    {
+        if (meshRenderer == null || propBlock == null) return;
+
+        if (active)
+        {
+            ApplyColor(hoverColor);
+        }
+        else
+        {
+            if (_isHighlighted)
+            {
+                ApplyColor(_currentHighlightColor);
+            }
+            else
+            {
+                meshRenderer.SetPropertyBlock(null);
+            }
+        }
+    }
+
+    private void ApplyColor(Color color)
+    {
+        meshRenderer.GetPropertyBlock(propBlock);
+        propBlock.SetColor("_Color", color);
+        meshRenderer.SetPropertyBlock(propBlock);
+    }
+
     public void SetNeighbors(List<Cell> neighbors)
     {
         Neighbors = neighbors;
