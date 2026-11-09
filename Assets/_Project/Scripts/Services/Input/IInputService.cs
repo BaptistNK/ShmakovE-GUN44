@@ -11,6 +11,7 @@ public interface IInputService
     event Action OnAimReleased; //Right button mouse released
     event Action OnReloadPressed; //R button
     event Action OnDashPressed; //Shift button (Dash)
+    event Action OnDashReleased;//Shift button (Dash) released
     event Action OnJumpPressed; //Space button (Jump)
     event Action OnSquatPressed; //Control button (Squat)
     event Action OnSquatReleased; //Control button (Squat) released

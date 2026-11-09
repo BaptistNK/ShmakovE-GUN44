@@ -4,21 +4,44 @@ using UnityEngine.InputSystem;
 using Zenject;
 
 public class InputService : IInputService, IInitializable, IDisposable
-{
+{    
+    private readonly InputSettings _settings; 
     private PlayerControls _controls; //Script input system
 
+    public InputService(InputSettings settings)
+    {
+        _settings = settings;
+    }
+
+
     //return vector movement WASD
-    public Vector2 MoveAxis => _controls!=null ? _controls.Player.Move.ReadValue<Vector2>() : Vector2.zero;
+    public Vector2 MoveAxis => _controls != null ? _controls.Player.Move.ReadValue<Vector2>() : Vector2.zero;
 
     //returt mouse movement
-    public Vector2 LookAxis => _controls!=null ? _controls.Player.Look.ReadValue<Vector2>() : Vector2.zero;
+    public Vector2 LookAxis
+    {
+        get
+        {
+            if (_controls == null) return Vector2.zero;
+
+            Vector2 rawLook = _controls.Player.Look.ReadValue<Vector2>();
+            float InvertMultiplier = _settings.invertY ? -1f : 1f;
+
+            return new Vector2(
+                rawLook.x * _settings.mouseSensitivity, 
+                rawLook.y * _settings.mouseSensitivity * InvertMultiplier);
+        }
+            
+    }
 
     public event Action OnFirePressed;
     public event Action OnAimPressed;
     public event Action OnAimReleased;
     public event Action OnReloadPressed;
     public event Action OnDashPressed;
+    public event Action OnDashReleased;
     public event Action OnJumpPressed;
+    public event Action OnJumpReleased;
     public event Action OnSquatPressed;
     public event Action OnSquatReleased;
 
@@ -35,7 +58,9 @@ public class InputService : IInputService, IInitializable, IDisposable
         _controls.Player.Aim.canceled += InvokeAimReleased;
         //reload
         _controls.Player.Reload.started += InvokeReloadPressed;
+
         _controls.Player.Dash.started += InvokeDashPressed;
+        _controls.Player.Dash.canceled += InvokeDashReleased;
         _controls.Player.Jump.started += InvokeJumpPressed;
         //squat
         _controls.Player.Squat.started += InvokeSquatPressed;
@@ -57,6 +82,7 @@ public class InputService : IInputService, IInitializable, IDisposable
         //reload
         _controls.Player.Reload.started -= InvokeReloadPressed;
         _controls.Player.Dash.started -= InvokeDashPressed;
+        _controls.Player.Dash.canceled -= InvokeDashReleased;
         _controls.Player.Jump.started -= InvokeJumpPressed;
         //squat
         _controls.Player.Squat.started -= InvokeSquatPressed;
@@ -65,7 +91,7 @@ public class InputService : IInputService, IInitializable, IDisposable
         _controls.Disable();
         _controls.Dispose();
         _controls = null;
-        Debug.Log("[InputService] Ресурсы успешно освобождены (Dispose)");
+        Debug.Log("[InputService] Ресурсы успешно освобождены");
     }
 
     public void ToggleInputMap(bool isGameplay)
@@ -97,6 +123,7 @@ public class InputService : IInputService, IInitializable, IDisposable
     private void InvokeAimReleased(InputAction.CallbackContext ctx) => OnAimReleased?.Invoke();
     private void InvokeReloadPressed(InputAction.CallbackContext ctx) => OnReloadPressed?.Invoke();
     private void InvokeDashPressed(InputAction.CallbackContext ctx) => OnDashPressed?.Invoke();
+    private void InvokeDashReleased(InputAction.CallbackContext ctx) => OnDashReleased?.Invoke();
     private void InvokeJumpPressed(InputAction.CallbackContext ctx) => OnJumpPressed?.Invoke();
     private void InvokeSquatPressed(InputAction.CallbackContext ctx) => OnSquatPressed?.Invoke();
     private void InvokeSquatReleased(InputAction.CallbackContext ctx) => OnSquatReleased?.Invoke();
