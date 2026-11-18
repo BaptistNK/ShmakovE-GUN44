@@ -17,7 +17,7 @@ MonoBehaviour:
     m_Bits: 64
   _raycastStartHeight: 0.5
   _raycastDistance: 1.2
-  _footOffset: 0.03
+  _footOffset: 0.12
   _ikBlendSpeed: 12
   _maxStepHeight: 0.25
   _pelvisBlendSpeed: 0

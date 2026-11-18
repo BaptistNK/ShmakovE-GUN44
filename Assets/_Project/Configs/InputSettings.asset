@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cac624312139f2f40829161348e4b187, type: 3}
   m_Name: InputSettings
   m_EditorClassIdentifier: 
-  _mouseSensitivity: 0.22
+  _mouseSensitivity: 0.1
   _invertY: 0
