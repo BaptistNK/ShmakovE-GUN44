@@ -1,19 +1,29 @@
-using System.Collections;
 using System;
 using UnityEngine;
 
-public interface IInputService
+namespace TPSShooter.Services.Input
 {
-    Vector2 MoveAxis { get; } //Movement 
-    Vector2 LookAxis { get; } //Look camera mouse
-    event Action OnFirePressed; //Left button mouse
-    event Action OnAimPressed; //Right button mouse 
-    event Action OnAimReleased; //Right button mouse released
-    event Action OnReloadPressed; //R button
-    event Action OnDashPressed; //Shift button (Dash)
-    event Action OnJumpPressed; //Space button (Jump)
-    event Action OnSquatPressed; //Control button (Squat)
-    event Action OnSquatReleased; //Control button (Squat) released
+    public interface IInputService
+    {
+        Vector2 MoveAxis { get; }
+        Vector2 LookAxis { get; }
 
-    void ToggleInputMap(bool isGameplay); //pause
+        event Action OnFirePressed;
+        event Action OnFireReleased;
+        event Action OnAimPressed;
+        event Action OnAimReleased;
+        event Action OnReloadPressed;
+        event Action OnDashPressed;
+        event Action OnJumpPressed;
+        event Action OnSquatPressed;
+        event Action OnSquatReleased;
+        event Action OnInteractPressed;
+        event Action OnMeleeAttackPressed;
+        event Action OnPausePressed;
+        event Action OnResumePressed;
+        event Action OnMapToggled;
+        event Action<float> OnWeaponScrolled;
+
+        void ToggleInputMap(bool isGameplay);
+    }
 }
